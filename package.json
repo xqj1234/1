@@ -1,0 +1,14 @@
+{
+  "name": "notes-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "sh scripts/sync-experience.sh",
+    "dev": "npm run sync && vitepress dev docs",
+    "build": "npm run sync && vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
