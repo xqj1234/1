@@ -1,0 +1,43 @@
+name: 每周整理检查
+
+on:
+  schedule:
+    # 每周一 09:00（北京时间 UTC+8）
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 检查链接
+        id: check
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/link-check.mjs 2>&1 | tee link-report.txt
+      - name: 汇总失效链接
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const report = fs.readFileSync('link-report.txt', 'utf8')
+            const title = '每周链接检查：发现失效链接'
+            const body = '自动检查发现以下失效链接：\n\n```\n' + report + '\n```'
+            const { owner, repo } = context.repo
+            const open = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 })
+            const existing = open.data.find((i) => i.title === title)
+            if (existing) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body })
+            } else {
+              await github.rest.issues.create({ owner, repo, title, body })
+            }

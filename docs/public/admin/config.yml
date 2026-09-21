@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
+backend:
+  name: github
+  repo: xqj1234/1
+  branch: main
+
+locale: zh_Hans
+
+media_folder: docs/public/images
+public_folder: /images
+
+collections:
+  - name: notes
+    label: 我的笔记
+    label_singular: 一篇笔记
+    folder: docs/notes
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 日期, name: date, widget: datetime, type: date, required: false }
+      - { label: 正文, name: body, widget: markdown }

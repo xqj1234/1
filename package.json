@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "sync": "sh scripts/sync-experience.sh",
-    "dev": "npm run sync && vitepress dev docs",
-    "build": "npm run sync && vitepress build docs",
+    "index": "node scripts/gen-index.mjs",
+    "prep": "npm run sync && npm run index",
+    "dev": "npm run prep && vitepress dev docs",
+    "build": "npm run prep && vitepress build docs",
     "preview": "vitepress preview docs"
   },
   "devDependencies": {
