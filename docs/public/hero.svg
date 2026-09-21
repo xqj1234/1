@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" role="img" aria-label="插图">
+  <defs>
+    <linearGradient id="disc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e0f5ea" />
+      <stop offset="1" stop-color="#a8e2c4" />
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1c6f47" />
+      <stop offset="1" stop-color="#4fbf86" />
+    </linearGradient>
+  </defs>
+  <circle cx="150" cy="150" r="138" fill="url(#disc)" />
+  <g transform="translate(48 44) scale(9)">
+    <path
+      d="M6.05 8.05c-2.73 2.73-2.73 7.15-.02 9.88 1.47-3.4 4.09-6.24 7.36-7.93-2.77 2.34-4.71 5.61-5.39 9.32 2.6 1.23 5.8.78 7.95-1.37C19.43 14.47 20 4 20 4S9.53 4.57 6.05 8.05z"
+      fill="url(#leaf)"
+    />
+  </g>
+</svg>

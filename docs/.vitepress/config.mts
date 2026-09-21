@@ -37,7 +37,11 @@ export default defineConfig({
   description: '个人笔记站',
   lang: 'zh-CN',
   base,
+  transformHead: () => [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }]
+  ],
   themeConfig: {
+    logo: '/logo.svg',
     nav: [
       { text: '首页', link: '/' },
       { text: '我的笔记', link: '/notes/' },
@@ -67,6 +71,10 @@ export default defineConfig({
         ]
       }
     ],
+    footer: {
+      message: '用 Markdown 记录，随想随写。',
+      copyright: '© 2026 我的笔记'
+    },
     search: { provider: 'local' },
     outline: { label: '本页目录', level: [2, 3] },
     docFooter: { prev: '上一篇', next: '下一篇' },
