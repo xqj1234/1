@@ -5,8 +5,81 @@
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>笔记后台</title>
+    <script>
+      // Sveltia 保存时依赖 Uint8Array 的 toBase64/fromBase64 等 2025 年新标准方法，
+      // 旧浏览器（Chrome < 133 等）没有，会在“保存”时报 toBase64 is not a function。
+      // 这里在加载编辑器前补齐，行为对齐标准。
+      (function () {
+        var proto = Uint8Array.prototype;
+        var STD = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        var URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+        if (typeof proto.toBase64 !== 'function') {
+          proto.toBase64 = function (options) {
+            options = options || {};
+            var alphabet = options.alphabet === 'base64url' ? URL : STD;
+            var out = '';
+            for (var i = 0; i < this.length; i += 3) {
+              var b0 = this[i];
+              var b1 = this[i + 1];
+              var b2 = this[i + 2];
+              out += alphabet[b0 >> 2];
+              out += alphabet[((b0 & 3) << 4) | ((b1 === undefined ? 0 : b1) >> 4)];
+              if (b1 === undefined) {
+                if (!options.omitPadding) out += '==';
+                break;
+              }
+              out += alphabet[((b1 & 15) << 2) | ((b2 === undefined ? 0 : b2) >> 6)];
+              if (b2 === undefined) {
+                if (!options.omitPadding) out += '=';
+                break;
+              }
+              out += alphabet[b2 & 63];
+            }
+            return out;
+          };
+        }
+
+        if (typeof Uint8Array.fromBase64 !== 'function') {
+          Uint8Array.fromBase64 = function (input, options) {
+            options = options || {};
+            var s = String(input).replace(/[\t\n\r ]/g, '');
+            if (options.alphabet === 'base64url' || /[-_]/.test(s)) {
+              s = s.replace(/-/g, '+').replace(/_/g, '/');
+            }
+            s = s.replace(/=+$/, '');
+            if (s.length % 4 === 1) throw new SyntaxError('Invalid base64');
+            while (s.length % 4) s += '=';
+            var bin = atob(s);
+            var out = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i) & 0xff;
+            return out;
+          };
+        }
+
+        if (typeof proto.toHex !== 'function') {
+          proto.toHex = function () {
+            var out = '';
+            for (var i = 0; i < this.length; i += 1) {
+              out += ('0' + this[i].toString(16)).slice(-2);
+            }
+            return out;
+          };
+        }
+
+        if (typeof Uint8Array.fromHex !== 'function') {
+          Uint8Array.fromHex = function (input) {
+            var s = String(input);
+            if (s.length % 2 !== 0 || /[^0-9a-fA-F]/.test(s)) throw new SyntaxError('Invalid hex');
+            var out = new Uint8Array(s.length / 2);
+            for (var i = 0; i < out.length; i += 1) out[i] = parseInt(s.slice(i * 2, i * 2 + 2), 16);
+            return out;
+          };
+        }
+      })();
+    </script>
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script src="https://unpkg.com/@sveltia/cms@0.217.0/dist/sveltia-cms.js"></script>
   </body>
 </html>
